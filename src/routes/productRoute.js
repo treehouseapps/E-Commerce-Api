@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const { isAdmin, isUser } = require('../middleware/authMddleware')
+const { isAdmin } = require('../middleware/authMddleware')
 
 const { addProduct, searchProducts, getAllProducts, getProduct, updateProduct, deleteProduct } = require('../controller/productController')
 
