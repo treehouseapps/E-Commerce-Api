@@ -109,5 +109,26 @@ const deleteCart = async (req, res) => {
         res.status(500).json({ msg: "Server error", error: error.message });
     }
 };
+// Calculate total payment price for the user
+const cartPayment = async (req, res) => {
+    try {
+        const userId = req.user.userId; // Get the user ID from the authenticated user
+        const cartItems = await cartModel.find({ userId }).populate('productId'); // Populate product details
+        if (cartItems.length === 0) {
+            return res.status(404).json({ msg: "Your cart is empty." });
+        }
 
-module.exports = { addCart, getAllCart, updateCart, deleteCart };
+        let totalPrice = 0;
+        cartItems.forEach(item => {
+            totalPrice += item.quantity * item.productId.price;
+        });
+
+        await cartModel.deleteMany({ userId })
+        // Proceed to payment simulation
+        res.json({ msg: "Checkout successful. Total price: $ " + totalPrice, totalPrice });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: "Server error", error: error.message });
+    }
+}
+module.exports = { addCart, getAllCart, updateCart, deleteCart, cartPayment };
