@@ -1,0 +1,19 @@
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+Atest-Api/
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+
+# Cache files
+.cache/
+dist/
+build/
+
+# Uploads (optional)
+uploads/
