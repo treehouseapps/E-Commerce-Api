@@ -1,10 +1,10 @@
 const express = require('express')
 const app = express()
 
-const { signup, login } = require('../controller/userController')
+const { adminSignup, signUp, login } = require('../controller/userController')
 
-app.post('/signup', signup)
+app.post('/signup', signUp)
 app.post('/login', login)
-// app.post('/adminSignup', signup)
+app.post('/adminSignup', adminSignup)
 
 module.exports = app
