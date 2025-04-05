@@ -44,6 +44,7 @@ const adminSignup = async (req, res) => {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
+
 const signUp = async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -79,7 +80,6 @@ const signUp = async (req, res) => {
     }
 };
 
-
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -101,4 +101,16 @@ const login = async (req, res) => {
     }
 }
 
-module.exports = { adminSignup, signUp, login } 
+const getUsers = async (req, res) => {
+    try {
+        const users = await userModel.find({ role: { $ne: 'admin' } }).select('-password');
+
+        res.status(200).json({
+            message: "Users retrieved successfully",
+            users
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+module.exports = { adminSignup, signUp, login, getUsers } 
