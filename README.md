@@ -39,15 +39,19 @@ This is a backend API for an e-commerce platform. It provides functionalities fo
 - `GET /getusers`: Retrieve all users (excluding admins) for admin users only.
 
 ### Cart Routes
-- `POST /addToCart`: Add a product to the user's cart.
-- `GET /viewCart`: View the user's cart items.
-- `DELETE /removeFromCart/:productId`: Remove a product from the user's cart.
+- `POST /cart/add`: Add a product to the user's cart.
+- `GET /cart/`: View the user's cart items.
+- `PUT /cart/:id`: Update the user's cart.
+- `DELETE /cart/:id`: Remove a product from the user's cart.
+- `GET /cart/payment/`: Proceed to payment and simulate the checkout process.
 
 ### Product Routes (Admin Only)
-- `POST /addProduct`: Add a new product to the store.
+- `POST /products/add`: Add a new product to the store.
+- `POST /products/search`: Admin searches for products by various criteria.
 - `GET /products`: View all products.
-- `PUT /updateProduct/:id`: Update the details of an existing product.
-- `DELETE /deleteProduct/:id`: Delete a product from the store.
+- `GET /products/:id`: View a specific product.
+- `PUT /products/:id`: Update the details of an existing product.
+- `DELETE /products/:id`: Delete a product from the store.
 
 ### Checkout & Payment Routes
 - `POST /checkout`: Proceed to checkout and simulate payment.
