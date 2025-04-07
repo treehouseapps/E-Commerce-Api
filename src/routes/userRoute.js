@@ -1,25 +1,77 @@
 const express = require('express');
-const router = express.Router();
-const { adminSignup, signUp, login, getUsers } = require('../controllers/userController');
+const app = express();
+
+const { isAdmin } = require('../middleware/authMddleware');
+const { adminSignup, signUp, login, getUsers } = require('../controller/userController');
 
 /**
  * @swagger
- * /api/users/signup/admin:
+ * /signup:
  *   post:
- *     summary: Create a new admin user
- *     description: Admin sign-up with secret code for role assignment.
- *     tags: [Users]
+ *     summary: Register a new user
+ *     description: Allows users to sign up using their email and password.
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
  *             required:
- *               - name
  *               - email
  *               - password
- *               - secret
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *       400:
+ *         description: Bad request
+ */
+app.post('/signup', signUp);
+
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     summary: Log in a user
+ *     description: Allows users to log in using their email and password, and receive a JWT token.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *             required:
+ *               - email
+ *               - password
+ *     responses:
+ *       200:
+ *         description: Login successful, returns JWT token
+ *       401:
+ *         description: Unauthorized
+ */
+app.post('/login', login);
+
+/**
+ * @swagger
+ * /adminSignup:
+ *   post:
+ *     summary: Register a new admin (requires secret key)
+ *     description: Allows new admins to register. Admin registration requires a special secret key.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
  *             properties:
  *               name:
  *                 type: string
@@ -29,90 +81,46 @@ const { adminSignup, signUp, login, getUsers } = require('../controllers/userCon
  *                 type: string
  *               secret:
  *                 type: string
- *     responses:
- *       201:
- *         description: Admin created successfully
- *       400:
- *         description: Missing required fields or email already exists
- *       403:
- *         description: Invalid secret code
- */
-router.post('/signup/admin', adminSignup);
-
-/**
- * @swagger
- * /api/users/signup:
- *   post:
- *     summary: Create a new user
- *     description: User sign-up to register for the application.
- *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
  *             required:
  *               - name
  *               - email
  *               - password
- *             properties:
- *               name:
- *                 type: string
- *               email:
- *                 type: string
- *               password:
- *                 type: string
+ *               - secret
  *     responses:
  *       201:
- *         description: User created successfully
+ *         description: Admin registered successfully
  *       400:
- *         description: Missing required fields or email already exists
+ *         description: Bad request or invalid secret key
  */
-router.post('/signup', signUp);
+app.post('/adminSignup', adminSignup);
 
 /**
  * @swagger
- * /api/users/login:
- *   post:
- *     summary: User login
- *     description: Logs in an existing user and returns a JWT token.
- *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *             properties:
- *               email:
- *                 type: string
- *               password:
- *                 type: string
- *     responses:
- *       200:
- *         description: Login successful, JWT token returned
- *       400:
- *         description: Invalid email or password
- */
-router.post('/login', login);
-
-/**
- * @swagger
- * /api/users:
+ * /getusers:
  *   get:
- *     summary: Get all users
- *     description: Retrieve a list of all users (excluding admins).
- *     tags: [Users]
+ *     summary: Retrieve a list of all users
+ *     description: Admin users can retrieve a list of non-admin users.
  *     responses:
  *       200:
- *         description: List of users retrieved successfully
- *       500:
- *         description: Server error
+ *         description: List of all users (excluding admin users)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                   name:
+ *                     type: string
+ *                   email:
+ *                     type: string
+ *                   role:
+ *                     type: string
+ *       403:
+ *         description: Forbidden, only admins can access this route
  */
-router.get('/', getUsers);
+app.get('/getusers', isAdmin, getUsers);
 
-module.exports = router;
+module.exports = app;

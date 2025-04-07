@@ -1,7 +1,7 @@
 const express = require('express');
-const router = express.Router();
-const { addProduct, searchProducts, getAllProducts, getProduct, updateProduct, deleteProduct } = require('../controllers/productController');
-
+const app = express.Router();
+const { addProduct, searchProducts, getAllProducts, getProduct, updateProduct, deleteProduct } = require('../controller/productController');
+const { isAdmin } = require('../middleware/authMddleware')
 /**
  * @swagger
  * /api/products:
@@ -36,7 +36,7 @@ const { addProduct, searchProducts, getAllProducts, getProduct, updateProduct, d
  *       400:
  *         description: Missing required fields
  */
-router.post('/', addProduct);
+app.post('/products/add', isAdmin, addProduct)
 
 /**
  * @swagger
@@ -51,7 +51,7 @@ router.post('/', addProduct);
  *       404:
  *         description: No products found
  */
-router.get('/', getAllProducts);
+app.get('/products/', getAllProducts)
 
 /**
  * @swagger
@@ -75,7 +75,7 @@ router.get('/', getAllProducts);
  *       404:
  *         description: Product not found
  */
-router.get('/:id', getProduct);
+app.get('/products/:id', getProduct)
 
 /**
  * @swagger
@@ -103,7 +103,7 @@ router.get('/:id', getProduct);
  *       404:
  *         description: No products found
  */
-router.post('/search', searchProducts);
+app.post('/products/search', searchProducts)
 
 /**
  * @swagger
@@ -143,7 +143,7 @@ router.post('/search', searchProducts);
  *       404:
  *         description: Product not found
  */
-router.put('/:id', updateProduct);
+app.put('/products/:id', isAdmin, updateProduct)
 
 /**
  * @swagger
@@ -167,6 +167,6 @@ router.put('/:id', updateProduct);
  *       404:
  *         description: Product not found
  */
-router.delete('/:id', deleteProduct);
+app.delete('/products/:id', isAdmin, deleteProduct)
 
-module.exports = router;
+module.exports = app;

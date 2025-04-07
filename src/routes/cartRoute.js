@@ -1,63 +1,79 @@
 const express = require('express');
-const router = express.Router();
-const { addCart, getAllCart, updateCart, deleteCart, cartPayment } = require('../controllers/cartController');
+const app = express();
+const { isUser } = require('../middleware/authMddleware');
+const { addCart, getAllCart, updateCart, deleteCart, cartPayment } = require('../controller/cartController');
 
 /**
  * @swagger
- * /api/cart:
+ * /cart/add:
  *   post:
- *     summary: Add product to cart
- *     description: Add a product to the user's cart.
- *     tags: [Cart]
+ *     summary: Add a product to the user's cart
+ *     description: Allows users to add a product to their cart, with product ID and quantity.
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - productId
- *               - quantity
  *             properties:
  *               productId:
  *                 type: string
  *               quantity:
- *                 type: integer
+ *                 type: number
+ *             required:
+ *               - productId
+ *               - quantity
  *     responses:
  *       201:
- *         description: Product added to cart successfully
+ *         description: Product added to cart
  *       400:
- *         description: Missing product ID or quantity
+ *         description: Bad request
+ *       403:
+ *         description: Forbidden, only logged-in users can access this route
  */
-router.post('/', addCart);
+app.post('/cart/add', isUser, addCart);
 
 /**
  * @swagger
- * /api/cart:
+ * /cart/:
  *   get:
- *     summary: Get all products in the cart
- *     description: Retrieve all products added to the user's cart.
- *     tags: [Cart]
+ *     summary: View the user's cart
+ *     description: Users can view the contents of their cart, including product details and total price.
  *     responses:
  *       200:
- *         description: List of products in the cart
- *       404:
- *         description: No products found in the cart
+ *         description: Cart items retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                   productId:
+ *                     type: string
+ *                   quantity:
+ *                     type: number
+ *                   price:
+ *                     type: number
+ *                     format: float
+ *       403:
+ *         description: Forbidden, only logged-in users can access this route
  */
-router.get('/', getAllCart);
+app.get('/cart/', isUser, getAllCart);
 
 /**
  * @swagger
- * /api/cart/{id}:
+ * /cart/{id}:
  *   put:
- *     summary: Update cart item quantity
- *     description: Update the quantity of a product in the user's cart.
- *     tags: [Cart]
+ *     summary: Update the user's cart
+ *     description: Allows users to update the quantity of a specific product in their cart.
  *     parameters:
- *       - name: id
- *         in: path
+ *       - in: path
+ *         name: id
  *         required: true
- *         description: Cart item ID
+ *         description: ID of the cart item to update
  *         schema:
  *           type: string
  *     requestBody:
@@ -66,58 +82,56 @@ router.get('/', getAllCart);
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - quantity
  *             properties:
  *               quantity:
- *                 type: integer
+ *                 type: number
+ *             required:
+ *               - quantity
  *     responses:
  *       200:
  *         description: Cart item updated successfully
- *       400:
- *         description: Invalid cart item ID or missing quantity
+ *       403:
+ *         description: Forbidden, only logged-in users can access this route
  *       404:
  *         description: Cart item not found
  */
-router.put('/:id', updateCart);
+app.put('/cart/:id', isUser, updateCart);
 
 /**
  * @swagger
- * /api/cart/{id}:
+ * /cart/{id}:
  *   delete:
- *     summary: Remove product from cart
- *     description: Remove a product from the user's cart by its ID.
- *     tags: [Cart]
+ *     summary: Remove a product from the user's cart
+ *     description: Users can remove a specific product from their cart by its ID.
  *     parameters:
- *       - name: id
- *         in: path
+ *       - in: path
+ *         name: id
  *         required: true
- *         description: Cart item ID
+ *         description: ID of the cart item to delete
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: Product removed from cart successfully
- *       400:
- *         description: Invalid cart item ID
+ *         description: Cart item removed successfully
+ *       403:
+ *         description: Forbidden, only logged-in users can access this route
  *       404:
  *         description: Cart item not found
  */
-router.delete('/:id', deleteCart);
+app.delete('/cart/:id', isUser, deleteCart);
 
 /**
  * @swagger
- * /api/cart/payment:
- *   post:
- *     summary: Checkout and calculate total price
- *     description: Calculate the total price for the items in the user's cart and simulate a payment.
- *     tags: [Cart]
+ * /cart/payment/:
+ *   get:
+ *     summary: Proceed to payment and simulate the checkout process
+ *     description: Users can proceed to the payment process and clear their cart after payment is simulated.
  *     responses:
  *       200:
- *         description: Checkout successful, total price calculated
- *       404:
- *         description: Cart is empty
+ *         description: Payment simulated successfully and cart cleared
+ *       403:
+ *         description: Forbidden, only logged-in users can access this route
  */
-router.post('/payment', cartPayment);
+app.get('/cart/payment/', isUser, cartPayment);
 
-module.exports = router;
+module.exports = app;
