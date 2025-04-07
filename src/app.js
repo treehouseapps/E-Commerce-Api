@@ -27,10 +27,10 @@ const swaggerOptions = {
         info: {
             title: 'E-Commerce API',
             version: '1.0.0',
-            description: 'A simple Express API for E-Commerce with Swagger documentation',
+            description: 'A simple Express API for E-Commerce with Swagger documentation <a href="https://e-commerce-api-f9qb.onrender.com/">e-commerce-api-f9qb.onrender.com </a>',
         },
     },
-    apis: ['./routes/*.js'], // Path to the route files where Swagger comments are present
+    apis: ['./src/routes/*.js'], // Path to the route files where Swagger comments are present
 };
 
 // Swagger docs setup
