@@ -86,18 +86,18 @@ const login = async (req, res) => {
 
         // Check if user exists
         const user = await userModel.findOne({ email });
-        if (!user) return res.status(400).json({ msg: "User Not Existed" });
+        if (!user) return res.status(400).json({ message: "User Not Existed" });
 
         // Compare passwords
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).json({ msg: "Password is Not Match" });
+        if (!isMatch) return res.status(400).json({ message: "Password is Not Match" });
 
         // Generate JWT token
         const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-        res.json({ msg: "Login successful", token });
+        res.json({ message: "Login successful", token });
     } catch (err) {
-        res.status(500).json({ msg: "Server error", error: err.message });
+        res.status(500).json({ message: "Server error", error: err.message });
     }
 }
 
