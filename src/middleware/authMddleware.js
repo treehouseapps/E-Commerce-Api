@@ -5,7 +5,7 @@ const isUser = (req, res, next) => {
     const token = req.header("Authorization");
     // Check if token exists
     if (!token) {
-        return res.status(401).json({ msg: "Access Denied! No token provided." });
+        return res.status(401).json({ message: "Access Denied! No token provided." });
     }
 
     try {
@@ -16,17 +16,17 @@ const isUser = (req, res, next) => {
         if (req.user.role === 'user') {
             next();
         } else {
-            return res.status(403).json({ msg: "Access Denied! User role required." });
+            return res.status(403).json({ message: "Access Denied! User role required." });
         }
     } catch (err) {
-        res.status(400).json({ msg: "Invalid Token" });
+        res.status(400).json({ message: "Invalid Token" });
     }
 };
 const isAdmin = (req, res, next) => {
     const token = req.header("Authorization");
     // Check if token exists
     if (!token) {
-        return res.status(401).json({ msg: "Access Denied! No token provided." });
+        return res.status(401).json({ message: "Access Denied! No token provided." });
     }
 
     try {
@@ -36,10 +36,10 @@ const isAdmin = (req, res, next) => {
         if (req.user.role === 'admin') {
             next();
         } else {
-            return res.status(403).json({ msg: "Access Denied! User role required." });
+            return res.status(403).json({ message: "Access Denied! User role required." });
         }
     } catch (err) {
-        res.status(400).json({ msg: "Invalid Token" });
+        res.status(400).json({ message: "Invalid Token" });
     }
 }
 module.exports = { isAdmin, isUser };
