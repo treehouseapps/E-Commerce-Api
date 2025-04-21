@@ -8,7 +8,7 @@ const addCart = async (req, res) => {
         const userId = req.user.userId;
 
         if (!productId || !quantity) {
-            return res.status(400).json({ msg: "Product ID and quantity are required" });
+            return res.status(400).json({ message: "Product ID and quantity are required" });
         }
 
         const qty = parseInt(quantity);
@@ -24,7 +24,7 @@ const addCart = async (req, res) => {
                 { new: true }
             );
 
-            return res.status(200).json({ msg: "Cart updated", cart: updatedItem });
+            return res.status(200).json({ message: "Product added to cart", cart: updatedItem });
         } else {
             const cartItem = await cartModel.create({
                 userId,
@@ -33,11 +33,11 @@ const addCart = async (req, res) => {
                 createdAt: new Date(),
             });
 
-            return res.status(201).json({ msg: "Product added to cart", cartItem });
+            return res.status(201).json({ message: "Product added to cart", cartItem });
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ msg: "Server error", error: error.message });
+        res.status(500).json({ message: "Server error", error: error.message });
     }
 };
 
@@ -48,12 +48,12 @@ const getAllCart = async (req, res) => {
 
         const products = await cartModel.find({ userId });
         if (!products.length) {
-            return res.status(404).json({ msg: "No products found in cart" });
+            return res.status(404).json({ message: "No products found in cart" });
         }
-        res.json({ msg: "Products in cart", products });
+        res.json({ message: "Products in cart", products });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ msg: "Server error", error: error.message });
+        res.status(500).json({ message: "Server error", error: error.message });
     }
 };
 
@@ -65,10 +65,10 @@ const updateCart = async (req, res) => {
         const userId = req.user.userId
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ msg: "Invalid product ID" });
+            return res.status(400).json({ message: "Invalid product ID" });
         }
         if (!quantity) {
-            return res.status(400).json({ msg: "Quantity is required" });
+            return res.status(400).json({ message: "Quantity is required" });
         }
         // Find and update the cart item, ensuring it belongs to the user
         const product = await cartModel.findOneAndUpdate(
@@ -78,13 +78,13 @@ const updateCart = async (req, res) => {
         );
 
         if (!product) {
-            return res.status(404).json({ msg: "Product not found in cart" });
+            return res.status(404).json({ message: "Product not found in cart" });
         }
 
-        res.json({ msg: "Product updated successfully", product });
+        res.json({ message: "Product updated successfully", product });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ msg: "Server error", error: error.message });
+        res.status(500).json({ message: "Server error", error: error.message });
     }
 };
 
@@ -95,18 +95,18 @@ const deleteCart = async (req, res) => {
         const userId = req.user.userId
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ msg: "Invalid product ID" });
+            return res.status(400).json({ message: "Invalid product ID" });
         }
 
         const product = await cartModel.findOneAndDelete({ _id: id, userId });
         if (!product) {
-            return res.status(404).json({ msg: "Product not found in cart" });
+            return res.status(404).json({ message: "Product not found in cart" });
         }
 
-        res.json({ msg: "Product deleted from cart" });
+        res.json({ message: "Product deleted from cart" });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ msg: "Server error", error: error.message });
+        res.status(500).json({ message: "Server error", error: error.message });
     }
 };
 // Calculate total payment price for the user
@@ -115,7 +115,7 @@ const cartPayment = async (req, res) => {
         const userId = req.user.userId; // Get the user ID from the authenticated user
         const cartItems = await cartModel.find({ userId }).populate('productId'); // Populate product details
         if (cartItems.length === 0) {
-            return res.status(404).json({ msg: "Your cart is empty." });
+            return res.status(404).json({ message: "Your cart is empty." });
         }
 
         let totalPrice = 0;
@@ -125,10 +125,10 @@ const cartPayment = async (req, res) => {
 
         await cartModel.deleteMany({ userId })
         // Proceed to payment simulation
-        res.json({ msg: "Checkout successful. Total price: $ " + totalPrice, totalPrice });
+        res.json({ message: "Checkout successful. Total price: $ " + totalPrice, totalPrice });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ msg: "Server error", error: error.message });
+        res.status(500).json({ message: "Server error", error: error.message });
     }
 }
 module.exports = { addCart, getAllCart, updateCart, deleteCart, cartPayment };
