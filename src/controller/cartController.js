@@ -46,7 +46,7 @@ const getAllCart = async (req, res) => {
     try {
         const userId = req.user.userId
 
-        const products = await cartModel.find({ userId });
+        const products = await cartModel.find({ userId }).populate('productId');
         if (!products.length) {
             return res.status(404).json({ message: "No products found in cart" });
         }
