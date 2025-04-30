@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const userModel = require('../model/userModel')
+const messageModel = require('../model/messageModel')
 
 // Admin signup logic
 const adminSignup = async (req, res) => {
@@ -99,7 +100,7 @@ const login = async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: "Server error", error: err.message });
     }
-}
+};
 
 const getUsers = async (req, res) => {
     try {
@@ -113,4 +114,36 @@ const getUsers = async (req, res) => {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
-module.exports = { adminSignup, signUp, login, getUsers } 
+
+const sendMessage = async (req, res) => {
+    const { name, email, message } = req.body
+    try {
+        if (!name || !email || !message) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+        const savedMessage = await messageModel.create({ name, email, message });
+
+        res.status(201).json({
+            message: "Message sent successfully",
+            savedMessage
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+}
+
+const getMessages = async (req, res) => {
+    try {
+        const messages = await messageModel.find()
+
+        res.status(200).json({
+            message: "Messages retrieved successfully",
+            messages
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+module.exports = { adminSignup, signUp, login, getUsers, sendMessage, getMessages } 

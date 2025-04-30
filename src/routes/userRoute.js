@@ -1,8 +1,8 @@
 const express = require('express');
 const app = express();
 
-const { isAdmin } = require('../middleware/authMddleware');
-const { adminSignup, signUp, login, getUsers } = require('../controller/userController');
+const { isUser, isAdmin } = require('../middleware/authMddleware');
+const { adminSignup, signUp, login, getUsers, sendMessage, getMessages } = require('../controller/userController');
 
 /**
  * @swagger
@@ -122,5 +122,70 @@ app.post('/adminSignup', adminSignup);
  *         description: Forbidden, only admins can access this route
  */
 app.get('/getusers', isAdmin, getUsers);
+
+/**
+ * @swagger
+ * /message:
+ *   post:
+ *     summary: Send a contact message
+ *     description: Allows users to send a contact message with their name, email, and message content.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               message:
+ *                 type: string
+ *             required:
+ *               - name
+ *               - email
+ *               - message
+ *     responses:
+ *       201:
+ *         description: Message sent successfully
+ *       400:
+ *         description: Bad request (missing fields)
+ *       500:
+ *         description: Server error
+ */
+app.post('/message', isUser, sendMessage);
+
+/**
+ * @swagger
+ * /getMessages:
+ *   get:
+ *     summary: Retrieve all contact messages
+ *     description: Allows admin users to retrieve a list of all messages sent via the contact form.
+ *     responses:
+ *       200:
+ *         description: List of all contact messages
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   name:
+ *                     type: string
+ *                   email:
+ *                     type: string
+ *                   message:
+ *                     type: string
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *       403:
+ *         description: Forbidden, only admins can access this route
+ */
+app.get('/getMessages', isAdmin, getMessages);
 
 module.exports = app;
