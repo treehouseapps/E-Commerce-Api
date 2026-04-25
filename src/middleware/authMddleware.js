@@ -39,12 +39,13 @@ const isAdmin = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(
-      token.replace("Bearer ", ""),
-      process.env.JWT_SECRET,
-    );
-    req.user = decoded;
+    const cleanToken = token.startsWith("Bearer ")
+      ? token.split(" ")[1]
+      : token;
 
+    const decoded = jwt.verify(cleanToken, process.env.JWT_SECRET);
+
+    req.user = decoded;
     if (req.user.role === "admin") {
       next();
     } else {

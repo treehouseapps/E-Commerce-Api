@@ -1,7 +1,15 @@
-const express = require('express');
+const express = require("express");
 const app = express.Router();
-const { addProduct, searchProducts, getAllProducts, getProduct, updateProduct, deleteProduct } = require('../controller/productController');
-const { isAdmin } = require('../middleware/authMddleware')
+const {
+  addProduct,
+  searchProducts,
+  getAllProducts,
+  getProduct,
+  updateProduct,
+  deleteProduct,
+} = require("../controller/productController");
+const { isAdmin } = require("../middleware/authMddleware");
+const upload = require("../middleware/upload");
 /**
  * @swagger
  * /products/add:
@@ -36,7 +44,7 @@ const { isAdmin } = require('../middleware/authMddleware')
  *       400:
  *         description: Missing required fields
  */
-app.post('/products/add', isAdmin, addProduct)
+app.post("/products/add", isAdmin, upload.single("img"), addProduct);
 
 /**
  * @swagger
@@ -51,7 +59,7 @@ app.post('/products/add', isAdmin, addProduct)
  *       404:
  *         description: No products found
  */
-app.get('/products/', getAllProducts)
+app.get("/products/", getAllProducts);
 
 /**
  * @swagger
@@ -75,7 +83,7 @@ app.get('/products/', getAllProducts)
  *       404:
  *         description: Product not found
  */
-app.get('/products/:id', getProduct)
+app.get("/products/:id", getProduct);
 
 /**
  * @swagger
@@ -103,7 +111,7 @@ app.get('/products/:id', getProduct)
  *       404:
  *         description: No products found
  */
-app.post('/products/search', searchProducts)
+app.post("/products/search", searchProducts);
 
 /**
  * @swagger
@@ -143,7 +151,7 @@ app.post('/products/search', searchProducts)
  *       404:
  *         description: Product not found
  */
-app.put('/products/:id', isAdmin, updateProduct)
+app.put("/products/:id", isAdmin, updateProduct);
 
 /**
  * @swagger
@@ -167,6 +175,6 @@ app.put('/products/:id', isAdmin, updateProduct)
  *       404:
  *         description: Product not found
  */
-app.delete('/products/:id', isAdmin, deleteProduct)
+app.delete("/products/:id", isAdmin, deleteProduct);
 
 module.exports = app;
