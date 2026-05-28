@@ -124,6 +124,49 @@ const getUsers = async (req, res) => {
   }
 };
 
+const getProfile = async (req, res) => {
+  try {
+    const user = await userModel.findById(req.user.userId).select("-password");
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.status(200).json({ user });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+const updateProfile = async (req, res) => {
+  try {
+    const { name, email } = req.body;
+    const update = {};
+    if (name) update.name = name;
+    if (email) update.email = email;
+
+    const existing = email
+      ? await userModel.findOne({ email, _id: { $ne: req.user.userId } })
+      : null;
+    if (existing) {
+      return res.status(400).json({ message: "Email is already in use" });
+    }
+
+    const user = await userModel
+      .findByIdAndUpdate(req.user.userId, update, { new: true })
+      .select("-password");
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.status(200).json({ message: "Profile updated", user });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+const deleteProfile = async (req, res) => {
+  try {
+    await userModel.findByIdAndDelete(req.user.userId);
+    res.status(200).json({ message: "Account deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 const sendMessage = async (req, res) => {
   const { name, email, message } = req.body;
   try {
@@ -159,6 +202,9 @@ module.exports = {
   signUp,
   login,
   getUsers,
+  getProfile,
+  updateProfile,
+  deleteProfile,
   sendMessage,
   getMessages,
 };

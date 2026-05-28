@@ -1,8 +1,18 @@
-const express = require('express');
+const express = require("express");
 const app = express();
 
-const { isUser, isAdmin } = require('../middleware/authMddleware');
-const { adminSignup, signUp, login, getUsers, sendMessage, getMessages } = require('../controller/userController');
+const { isUser, isAdmin } = require("../middleware/authMddleware");
+const {
+  adminSignup,
+  signUp,
+  login,
+  getUsers,
+  getProfile,
+  updateProfile,
+  deleteProfile,
+  sendMessage,
+  getMessages,
+} = require("../controller/userController");
 
 /**
  * @swagger
@@ -30,7 +40,7 @@ const { adminSignup, signUp, login, getUsers, sendMessage, getMessages } = requi
  *       400:
  *         description: Bad request
  */
-app.post('/signup', signUp);
+app.post("/signup", signUp);
 
 /**
  * @swagger
@@ -58,7 +68,7 @@ app.post('/signup', signUp);
  *       401:
  *         description: Unauthorized
  */
-app.post('/login', login);
+app.post("/login", login);
 
 /**
  * @swagger
@@ -92,7 +102,11 @@ app.post('/login', login);
  *       400:
  *         description: Bad request or invalid secret key
  */
-app.post('/adminSignup', adminSignup);
+app.post("/adminSignup", adminSignup);
+
+app.get("/profile", isUser, getProfile);
+app.put("/profile", isUser, updateProfile);
+app.delete("/profile", isUser, deleteProfile);
 
 /**
  * @swagger
@@ -121,7 +135,7 @@ app.post('/adminSignup', adminSignup);
  *       403:
  *         description: Forbidden, only admins can access this route
  */
-app.get('/getusers', isAdmin, getUsers);
+app.get("/getusers", isAdmin, getUsers);
 
 /**
  * @swagger
@@ -154,7 +168,7 @@ app.get('/getusers', isAdmin, getUsers);
  *       500:
  *         description: Server error
  */
-app.post('/message', isUser, sendMessage);
+app.post("/message", isUser, sendMessage);
 
 /**
  * @swagger
@@ -186,6 +200,6 @@ app.post('/message', isUser, sendMessage);
  *       403:
  *         description: Forbidden, only admins can access this route
  */
-app.get('/getMessages', isAdmin, getMessages);
+app.get("/getMessages", isAdmin, getMessages);
 
 module.exports = app;
